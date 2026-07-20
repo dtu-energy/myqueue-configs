@@ -1,0 +1,18 @@
+#!/bin/bash
+# ASPIRE2A PBS Pro does not support qsub -d. MyQueue passes -d <workdir>;
+# strip it and rely on the job script's cd (MyQueue already does that).
+# Install: cp ASPIRE2A/qsub-wrapper ~/.local/bin/qsub && chmod +x ~/.local/bin/qsub
+args=()
+skip=
+for a in "$@"; do
+    if [[ -n "$skip" ]]; then
+        skip=
+        continue
+    fi
+    if [[ "$a" == "-d" ]]; then
+        skip=1
+        continue
+    fi
+    args+=("$a")
+done
+exec /opt/pbs/bin/qsub "${args[@]}"
